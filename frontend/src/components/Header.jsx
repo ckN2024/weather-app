@@ -1,10 +1,11 @@
 import React from 'react'
 import Navbar from './Navbar'
+import SearchBar from './SearchBar'
 
 const Header = () => {
   return (
-    <div className="w-full shadow-md flex gap-[1.2em] justify-between p-2">
-        <div className=''>Searchbar</div>
+    <div className="w-full shadow-md flex items-center gap-[1.2em] justify-between px-[6em] py-2">
+        <SearchBar />
         <div className='flex flex-col items-center'>
             <img 
                 src="/weather-app.svg" 
