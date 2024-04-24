@@ -1,10 +1,10 @@
-import './App.css'
+import Header from "./components/Header"
 
 function App() {
 
   return (
     <>
-      <p className="bg-red-500">Hello world</p>
+      <Header />
     </>
   )
 }
