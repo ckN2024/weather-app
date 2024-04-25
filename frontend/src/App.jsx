@@ -1,12 +1,19 @@
-import Header from "./components/Header"
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  Routes,
+} from "react-router-dom";
+import Home from "./screens/Home";
 
 function App() {
-
   return (
-    <>
-      <Header />
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
