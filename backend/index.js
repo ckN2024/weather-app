@@ -2,12 +2,21 @@ import express from "express";
 import bodyParser from "body-parser";
 import AmazonCognitoIdentity from "amazon-cognito-identity-js"
 import dotenv from "dotenv"
+import cors from "cors"
 
 dotenv.config()
 
 
 const app = express();
 const PORT = 5000;
+
+var corsOptions = {
+  origin: 'http://localhost:5173',
+  optionsSuccessStatus: 200
+}
+
+
+app.use(cors(corsOptions))
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
