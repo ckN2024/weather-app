@@ -1,14 +1,50 @@
-import express from "express"
+import express from "express";
+import bodyParser from "body-parser";
+import AmazonCognitoIdentity from "amazon-cognito-identity-js"
+import dotenv from "dotenv"
 
-const app = express()
-const PORT = 5000
+dotenv.config()
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "server responded"
-    })
-})
+
+const app = express();
+const PORT = 5000;
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.post("/signup", (req, res) => {
+  const {email, password} = req.body;
+
+  const poolData = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID, 
+    ClientId: process.env.COGNITO_CLIENT_ID,
+  };
+  let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+  let attributeList = [];
+
+  userPool.signUp(
+    email,
+    password,
+    attributeList,
+    null,
+    function (err, result) {
+      if (err) {
+        console.log("failed to register", err.message)
+        alert(err.message || JSON.stringify(err));
+        return;
+      }
+      console.log("User registered successfully")
+    }
+  );
+
+  res.json({
+    message: "post method in /signup route",
+    email,
+    password
+  });
+});
 
 app.listen(PORT, () => {
-    console.log(`server running on port: ${PORT}`)
-})
+  console.log(`server running on port: ${PORT}`);
+});
