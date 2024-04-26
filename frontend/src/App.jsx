@@ -7,6 +7,7 @@ import {
 import Home from "./screens/Home";
 import SignUp from "./screens/SignUp";
 import SignIn from "./screens/SignIn";
+import Verify from "./screens/Verify";
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />}/>
+        <Route path="/verify" element={<Verify />}/>
+
       </Routes>
     </BrowserRouter>
   );
