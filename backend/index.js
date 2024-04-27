@@ -46,24 +46,20 @@ app.post("/signup", (req, res) => {
   });
 });
 
-
-
-
-
 // verify
 app.post("/verify", (req, res) => {
-  const { otp } = req.body;
-  console.log("opt recieved: ", otp)
+  const { otp, email } = req.body;
+  console.log("opt recieved: ", otp);
 
   try {
     var poolData = {
-      UserPoolId: process.env.COGNITO_USER_POOL_ID, 
-      ClientId: process.env.COGNITO_CLIENT_ID, 
+      UserPoolId: process.env.COGNITO_USER_POOL_ID,
+      ClientId: process.env.COGNITO_CLIENT_ID,
     };
 
     var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
     var userData = {
-      Username: "cknaorem.kakching@gmail.com",    // ##############put user email here
+      Username: email, // ##############put user email here
       Pool: userPool,
     };
 
@@ -84,6 +80,7 @@ app.post("/verify", (req, res) => {
     otp,
   });
 });
+
 
 app.listen(PORT, () => {
   console.log(`server running on port: ${PORT}`);

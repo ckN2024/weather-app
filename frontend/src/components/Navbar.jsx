@@ -13,7 +13,7 @@ const Navbar = () => {
         </Link>
 
         {/* Login */}
-        <Link to="/login" className='flex gap-1 items-center'>
+        <Link to="/signin" className='flex gap-1 items-center'>
         <IoMdLogIn className="text-[1.5em]"/>
             <p className='text-xl text-slate-700 hover:text-slate-900 hover:underline'>Login</p>
         </Link>
