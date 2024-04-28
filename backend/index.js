@@ -3,8 +3,10 @@ import bodyParser from "body-parser";
 import AmazonCognitoIdentity from "amazon-cognito-identity-js";
 import dotenv from "dotenv";
 import cors from "cors";
+import connectDB from "./config/connectDB.js";
 
-dotenv.config();
+dotenv.config()
+connectDB()
 
 const app = express();
 const PORT = 5000;
