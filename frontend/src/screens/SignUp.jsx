@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const SignUp = ({ setEmail }) => {
   const [formData, setFormData] = useState({
@@ -138,6 +139,11 @@ const SignUp = ({ setEmail }) => {
             Sign Up
           </button>
         </form>
+
+        <div className='flex flex-col items-center'>
+            <p className='text-slate-700'>or</p>
+          <Link to="/signin" className='text-blue-500 underline'>Log in</Link>
+          </div>
       </div>
     </div>
   );
