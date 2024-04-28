@@ -14,7 +14,7 @@ const Home = () => {
   useEffect(() => {
     setData(weather);
   }, []);
-  
+
   return (
     <div>
         <Header />

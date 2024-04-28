@@ -1,19 +1,24 @@
 import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 
-const SignUp = () => {
+const SignUp = ({setEmail}) => {
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   })
 
+  const navigate   = useNavigate();
+
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
       const dataSent = await axios.post("http://localhost:5000/signup", formData)
+      setEmail(formData.email)
       console.log(`Data sent: ${dataSent}`)
       console.log(formData)
+      navigate("/verify");
     } catch (error) {
       console.log("Error in cognito")
     }
@@ -21,7 +26,7 @@ const SignUp = () => {
 
   return (
     <div>
-      <form action="">
+      <form onSubmit={submitHandler}>
         <label htmlFor="email">Email</label>
         <input 
           id="email" 
@@ -36,7 +41,7 @@ const SignUp = () => {
         <input 
           id="password"
           type="password" 
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          onChange={(e) => setFormData({...formData, password: e.target.value})}
           placeholder="Enter password" 
           className="border"
         />
@@ -44,7 +49,6 @@ const SignUp = () => {
 
         <button 
           className='border p-2'
-          onClick={submitHandler}
         >
           Sign up
         </button>

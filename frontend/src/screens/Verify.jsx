@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const Verify = () => {
+const Verify = ({email}) => {
   const [otp, setOtp] = useState("");
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
     try {
-        await axios.post("http://localhost:5000/verify",{otp})
+        await axios.post("http://localhost:5000/verify",{otp, email})
+        navigate("/")
+
     } catch (error) {
         console.log("error in code verification")
         console.log(error)
