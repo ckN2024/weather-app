@@ -42,7 +42,7 @@ const signUp = (req, res) => {
 // @route   POST /api/users/verify
 // @access  Public
 const verify = (req, res) => {
-  const { otp, email } = req.body;
+  const { verifyCode, email } = req.body;
 
   try {
     var poolData = {
@@ -57,7 +57,7 @@ const verify = (req, res) => {
     };
 
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    cognitoUser.confirmRegistration(otp, true, function (err, result) {
+    cognitoUser.confirmRegistration(verifyCode, true, function (err, result) {
       if (err) {
         console.log(err.message || JSON.stringify(err));
         return;
@@ -65,12 +65,12 @@ const verify = (req, res) => {
       console.log("call result: " + result);
     });
   } catch (error) {
-    console.log("error in verify otp", error.message);
+    console.log("error in verify", error.message);
   }
 
   res.json({
     message: "verify route",
-    otp,
+    verifyCode,
     email,
   });
 };

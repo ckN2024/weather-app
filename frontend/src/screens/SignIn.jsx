@@ -72,32 +72,6 @@ const SignIn = () => {
       </div>
 
       <img src="/forms.svg" alt="form_image" className="max-h-[70vh]" />
-
-      {/* <form onSubmit={submitHandler}>
-        <label htmlFor="email">Email</label>
-        <input 
-          id="email" 
-          type="text" 
-          placeholder='Enter email' 
-          onChange={(e) => setFormData({...formData, email: e.target.value})} 
-        />
-        <br />
-
-        <label htmlFor="password"></label>
-        <input 
-          id="password" 
-          type="password" 
-          placeholder='Enter password'
-          onChange={(e) => setFormData({...formData, password: e.target.value})} 
-        />
-        <br />
-
-        <button 
-          className='border p-2'
-        >
-          Sign in
-        </button>
-      </form> */}
     </div>
   )
 }
