@@ -1,5 +1,4 @@
 import AmazonCognitoIdentity from "amazon-cognito-identity-js";
-
 // @desc    signup user
 // @route   POST /api/users
 // @access  Public
