@@ -10,7 +10,7 @@ const Verify = ({email}) => {
     e.preventDefault();
 
     try {
-        await axios.post("http://localhost:5000/verify",{otp, email})
+        await axios.post("http://localhost:5000/api/users/verify",{otp, email})
         navigate("/")
 
     } catch (error) {

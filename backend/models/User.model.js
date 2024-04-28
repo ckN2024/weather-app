@@ -25,19 +25,10 @@ const UserSchema = new mongoose.Schema(
       required: [true, "email is required"],
     },
 
-    phoneNumber: {
-      countryCode: {
-        type: String,
-        required: [true, "Country code is required"],
-        trim: true,
-      },
-      number: {
-        type: String,
-        required: [true, "10 digit phone number is required"],
-        trim: true,
-        maxlength: [10, "Phone number must be 10 digits"],
-        minlength: [10, "Phone number must be 10 digits"],
-      },
+    mobileNumber: {
+      type: String,
+      maxlength: [10, "Mobile number must be 10 digits"],
+      minLength: [10, "Mobile number must be 10 digits"]
     },
 
     password: {
