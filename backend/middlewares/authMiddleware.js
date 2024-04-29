@@ -22,6 +22,7 @@ const authenticateUser = async (req, res, next) => {
       algorithms: ["RS256"],
     });
     console.log(decodedToken);
+
     next(); 
   } catch (err) {
     console.log("Error in verifying token:", err.message);

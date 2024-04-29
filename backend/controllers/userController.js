@@ -84,8 +84,26 @@ const verify = async (req, res) => {
 // @route   POST /api/users/favourites
 // @access  Private
 const addFavourites = async (req, res) => {
-  // extract access token from header.
-  const {accessToken} = req.headers
+  const {city, email} = req.query
+  
+  // find the user in db by email
+
+  try {
+    const user = await User.findOne({email: email})
+    if(!user) {
+      throw new Error("User not found in db")
+    }
+
+    // push the city name to user's favourite
+    user.favouritePlaces.push(city)
+
+    // save user in db
+    await user.save()
+
+  } catch (error) {
+    console.log("Error in updating favourites")
+    console.log(error.message)
+  }
 
   res.json({
     message: "Message from addToFavourite function"
