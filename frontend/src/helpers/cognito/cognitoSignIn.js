@@ -6,8 +6,6 @@ const cognitoSignIn = async (email, password) => {
   const UserPoolId = import.meta.env.VITE_COGNITO_USER_POOL_ID;
   const ClientId = import.meta.env.VITE_COGNITO_CLIENT_ID;
 
-  console.log(`ENV : ${UserPoolId} , ${ClientId}`);
-
   var authenticationData = {
     Username: email,
     Password: password,
@@ -34,14 +32,26 @@ const cognitoSignIn = async (email, password) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: function (result) {
         AWS.config.region = "stockholm";
-        var accessToken = result.getAccessToken().getJwtToken();
+        let accessToken = result.getAccessToken().getJwtToken()
+        let idToken = result.getIdToken().getJwtToken()
+        let refreshToken = result.getRefreshToken().getToken()
 
-        try {
-          const tokens = cognitoGetCurrentUser();
-          resolve(tokens)
-        } catch (error) {
-          reject("User cannot be found : ", error)
-        }
+        // console.log(`from cognitoSignIn : accessToken : ${JSON.stringify(accessToken)}`)
+        // console.log(`from cognitoSignIn : idToken : ${JSON.stringify(idToken)}`)
+        // console.log(`from cognitoSignIn : refreshToken : ${JSON.stringify(refreshToken)}`)
+
+        resolve({
+          accessToken,
+          idToken,
+          refreshToken
+        })
+
+        // try {
+        //   const tokens = cognitoGetCurrentUser();
+        //   resolve(tokens)
+        // } catch (error) {
+        //   reject("User cannot be found : ", error)
+        // }
       },
 
       onFailure: function (err) {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 const Verify = ({ email }) => {
   const [verifyCode, setVerifyCode] = useState("");
@@ -10,10 +9,11 @@ const Verify = ({ email }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    console.log(`email : `, email)
     try {
       await axios.post("http://localhost:5000/api/users/verify", {
         verifyCode,
-        email,
+        email
       });
       navigate("/");
     } catch (error) {

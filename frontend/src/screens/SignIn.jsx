@@ -3,6 +3,7 @@ import { useState } from 'react'
 import cognitoSignIn from "../helpers/cognito/cognitoSignIn"
 import axios from 'axios'
 import {Link} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -10,13 +11,20 @@ const SignIn = () => {
     password: "",
   })
 
+  const navigate = useNavigate()
+
   const submitHandler = async (e) => {
     e.preventDefault()
 
     try {
       const authTokens = await cognitoSignIn(formData.email, formData.password);
-      console.log(`access token SignIn: ${JSON.stringify(authTokens)}`)
-      console.log(authTokens.idToken)
+      
+      // store tokens in session
+      sessionStorage.setItem("accessToken", authTokens.accessToken)
+      sessionStorage.setItem("refreshToken", authTokens.refreshToken)
+      sessionStorage.setItem("idToken", authTokens.idToken)
+
+      navigate("/")
     } catch (error) {
       console.log(error)
     }

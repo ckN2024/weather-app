@@ -43,7 +43,7 @@ const SignUp = ({ setEmail }) => {
         <form onSubmit={submitHandler} className="flex flex-col gap-3">
           <div>
             <label htmlFor="userName" className="block text-slate-600">
-              User Name
+              Username
             </label>
             <input
               id="userName"
