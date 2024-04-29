@@ -18,7 +18,7 @@ const Verify = ({ email, password }) => {
       });
 
       // sign in the user automatically
-      await cognitoSignIn(email, password);
+      await cognitoSignIn(email, password)
 
       navigate("/");
     } catch (error) {

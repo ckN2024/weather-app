@@ -80,4 +80,17 @@ const verify = async (req, res) => {
   });
 };
 
-export { signUp, verify };
+// @desc    add a favourite place
+// @route   POST /api/users/favourites
+// @access  Private
+const addFavourites = async (req, res) => {
+  // extract access token from header.
+  const {accessToken} = req.headers
+
+  res.json({
+    message: "Message from addToFavourite function"
+  })
+}
+
+
+export { signUp, verify, addFavourites }
