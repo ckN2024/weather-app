@@ -11,14 +11,15 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<SignUp setEmail={setEmail} />} />
+        <Route path="/signup" element={<SignUp setEmail={setEmail} setPassword={setPassword}/>} />
         <Route path="/signin" element={<SignIn />}/>
-        <Route path="/verify" element={<Verify email={email}/>}/>
+        <Route path="/verify" element={<Verify email={email} password={password}/>}/>
 
       </Routes>
     </BrowserRouter>

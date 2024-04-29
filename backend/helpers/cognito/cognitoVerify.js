@@ -1,11 +1,12 @@
 import AmazonCognitoIdentity from "amazon-cognito-identity-js";
 
 const cognitoVerify = (email, verifyCode) => {
-  console.log("from cognitoVerify: ");
-  console.log(`email: ${email}`)
-  console.log(`verifyCode: ${verifyCode}`)
   
   return new Promise((resolve, reject) => {
+    if(!email && !verifyCode){
+      reject(null);
+    }
+
     var poolData = {
       UserPoolId: process.env.COGNITO_USER_POOL_ID,
       ClientId: process.env.COGNITO_CLIENT_ID,
@@ -22,6 +23,8 @@ const cognitoVerify = (email, verifyCode) => {
       if (err) {
         reject(err);
       }
+      console.log(`cognitoVerify -> result : ${result}`)
+      
       resolve(result);
     });
   });

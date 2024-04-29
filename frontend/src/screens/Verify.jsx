@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import cognitoSignIn from "../helpers/cognito/cognitoSignIn";
 
-const Verify = ({ email }) => {
+const Verify = ({ email, password }) => {
   const [verifyCode, setVerifyCode] = useState("");
   const navigate = useNavigate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    console.log(`email : `, email)
     try {
+      // verify the user
       await axios.post("http://localhost:5000/api/users/verify", {
         verifyCode,
-        email
+        email,
       });
+
+      // sign in the user automatically
+      await cognitoSignIn(email, password);
+
       navigate("/");
     } catch (error) {
       console.log("error in code verification");

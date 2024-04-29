@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const SignUp = ({ setEmail }) => {
+const SignUp = ({ setEmail, setPassword }) => {
   const [formData, setFormData] = useState({
     userName: "",
     firstName: "",
@@ -19,17 +19,17 @@ const SignUp = ({ setEmail }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const dataSent = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/users",
         formData
       );
 
-      setEmail(formData.email);
-      console.log(`Data sent: ${dataSent}`);
-      console.log(formData);
-      navigate("/verify");
+      setEmail(formData.email)
+      setPassword(formData.password)
+
+      navigate("/verify")
     } catch (error) {
-      console.log("Error in cognito");
+      console.log("Error in cognito")
     }
   };
 

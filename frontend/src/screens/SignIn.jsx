@@ -18,12 +18,6 @@ const SignIn = () => {
 
     try {
       const authTokens = await cognitoSignIn(formData.email, formData.password);
-      
-      // store tokens in session
-      sessionStorage.setItem("accessToken", authTokens.accessToken)
-      sessionStorage.setItem("refreshToken", authTokens.refreshToken)
-      sessionStorage.setItem("idToken", authTokens.idToken)
-
       navigate("/")
     } catch (error) {
       console.log(error)

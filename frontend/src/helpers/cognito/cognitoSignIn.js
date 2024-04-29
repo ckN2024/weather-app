@@ -1,5 +1,9 @@
-import {AuthenticationDetails, CognitoUserPool, CognitoUser} from "amazon-cognito-identity-js"
-import * as AWS from "aws-sdk/global"
+import {
+  AuthenticationDetails,
+  CognitoUserPool,
+  CognitoUser,
+} from "amazon-cognito-identity-js";
+import * as AWS from "aws-sdk/global";
 import cognitoGetCurrentUser from "./cognitoGetCurrentUser";
 
 const cognitoSignIn = async (email, password) => {
@@ -11,10 +15,8 @@ const cognitoSignIn = async (email, password) => {
     Password: password,
   };
 
-  var authenticationDetails = new AuthenticationDetails(
-    authenticationData
-  );
-  
+  var authenticationDetails = new AuthenticationDetails(authenticationData);
+
   var poolData = {
     UserPoolId,
     ClientId,
@@ -32,19 +34,20 @@ const cognitoSignIn = async (email, password) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: function (result) {
         AWS.config.region = "stockholm";
-        let accessToken = result.getAccessToken().getJwtToken()
-        let idToken = result.getIdToken().getJwtToken()
-        let refreshToken = result.getRefreshToken().getToken()
+        let accessToken = result.getAccessToken().getJwtToken();
+        let idToken = result.getIdToken().getJwtToken();
+        let refreshToken = result.getRefreshToken().getToken();
 
-        // console.log(`from cognitoSignIn : accessToken : ${JSON.stringify(accessToken)}`)
-        // console.log(`from cognitoSignIn : idToken : ${JSON.stringify(idToken)}`)
-        // console.log(`from cognitoSignIn : refreshToken : ${JSON.stringify(refreshToken)}`)
+        // store tokens in session
+        sessionStorage.setItem("accessToken", accessToken);
+        sessionStorage.setItem("refreshToken",refreshToken);
+        sessionStorage.setItem("idToken", idToken);
 
         resolve({
           accessToken,
           idToken,
-          refreshToken
-        })
+          refreshToken,
+        });
 
         // try {
         //   const tokens = cognitoGetCurrentUser();
