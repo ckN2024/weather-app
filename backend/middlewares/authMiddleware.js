@@ -5,7 +5,9 @@ import errorResponse from "../helpers/response/errorResponse.js"
 
 const authenticateUser = async (req, res, next) => {
   // Extract access token from header.
-  const { access_token } = req.headers;
+  // const { access_token } = req.headers;
+  const access_token = req.headers.authorization.split(" ")[1]
+  // console.log(access_token)
 
   const result = await fetch(
     "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_sq7Hcnvxh/.well-known/jwks.json"
@@ -26,7 +28,7 @@ const authenticateUser = async (req, res, next) => {
 
     next(); 
   } catch (error) {
-    errorResponse(res, 400, error.message)
+    errorResponse(res, 400, "Authentication error", error.message)
   }
 };
 
