@@ -8,6 +8,7 @@ import SignUp from "./screens/SignUp";
 import SignIn from "./screens/SignIn";
 import Verify from "./screens/Verify";
 import { useEffect, useState } from "react";
+import UploadProfilePicture from "./screens/UploadProfilePicture";
 
 function App() {
   const [email, setEmail] = useState("")
@@ -20,7 +21,7 @@ function App() {
         <Route path="/signup" element={<SignUp setEmail={setEmail} setPassword={setPassword}/>} />
         <Route path="/signin" element={<SignIn />}/>
         <Route path="/verify" element={<Verify email={email} password={password}/>}/>
-
+        <Route path="/upload" element={<UploadProfilePicture />} />
       </Routes>
     </BrowserRouter>
   );

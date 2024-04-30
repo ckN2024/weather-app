@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import jwk from "./jwk.js";
+import errorResponse from "../helpers/response/errorResponse.js"
 
 const authenticateUser = async (req, res, next) => {
   // Extract access token from header.
@@ -24,11 +25,8 @@ const authenticateUser = async (req, res, next) => {
     console.log(decodedToken);
 
     next(); 
-  } catch (err) {
-    console.log("Error in verifying token:", err.message);
-    res.json({
-        message: "token verification error"
-    })
+  } catch (error) {
+    errorResponse(res, 400, error.message)
   }
 };
 
