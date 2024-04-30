@@ -7,9 +7,12 @@ import { ImLocation } from "react-icons/im";
 import { FaTemperatureHalf } from "react-icons/fa6";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import { WiHumidity } from "react-icons/wi";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 
 const Home = () => {
     const [data, setData] = useState({});
+    // whenever a city is searched isCityInFavourites will get updated accordingly
+    const [isCityInFavourites, setIsCityInFavourites] = useState(false)
 
   useEffect(() => {
     setData(weather);
@@ -18,7 +21,17 @@ const Home = () => {
   return (
     <div>
         <Header />
-      <div className="flex flex-col border rounded text-slate-700 bg-gradient-to-br from-indigo-200 from-10% via-sky-100 via-30% to-indigo-300 to-90% h-[75vh] mx-[6em] my-[2em] p-[3em]">
+      <div className="flex flex-col border rounded text-slate-700 bg-gradient-to-br from-indigo-200 from-10% via-sky-100 via-30% to-indigo-300 to-90% h-[75vh] mx-[6em] my-[2em] p-[3em] relative">
+        <div className="absolute top-[1.5em] right-[1.5em]">
+          {
+            isCityInFavourites ? (
+              <GoHeartFill className="text-[2.5em] text-red-400" title="remove from favourites" />
+            ):(
+              <GoHeart className="text-[2.5em] text-red-400" title="mark favourite"/>
+            )
+          }
+          
+        </div>
         {/* city name */}
         <div className="flex gap-1 items-center text-[2em] font-semibold">
           <ImLocation className="" />
