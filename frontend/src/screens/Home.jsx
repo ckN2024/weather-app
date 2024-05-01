@@ -21,12 +21,19 @@ const Home = ({email}) => {
     setFiveDaysData(fivedayforecast);
   }, []);
 
+  const favouriteButtonHandler = () => {
+    // add to favourites
+  }
+
   return (
     <div>
       <Header email={email}/>
       <div className="flex flex-col flex-wrap space-between gap-3 border rounded text-slate-700 bg-gradient-to-br from-indigo-200 from-10% via-sky-100 via-30% to-indigo-300 to-90% h-[75vh] mx-[6em] my-[2em] p-[3em] relative">
         {/* favourite button */}
-        <div className="absolute top-[1.5em] right-[1.5em]">
+        <div
+          onClick={favouriteButtonHandler} 
+          className="absolute top-[1.5em] right-[1.5em]"
+        >
           {isCityInFavourites ? (
             <GoHeartFill
               className="text-[2.5em] text-red-400"

@@ -97,9 +97,12 @@ const verify = async (req, res) => {
 // @route   POST /api/users/favourites
 // @access  Private
 const addFavourites = async (req, res) => {
-  const { city, email } = req.query;
+  // extract email UUID from token
 
+  const { city, email } = req.query;
   // find the user in db by email
+  
+
   try {
     const user = await User.findOne({ email: email }).select("-password");
     if (!user) {
@@ -188,7 +191,7 @@ const getUserById = async (req, res) => {
     errorResponse(res, 400, "Error in fetching user", error.message)
   }
 
-  res.json("getUserBy id route");
+  // res.json("getUserBy id route");
 };
 
 export { signUp, verify, addFavourites, uploadProfilePic, getUserById };
