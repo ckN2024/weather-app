@@ -6,6 +6,8 @@ import successResponse from "../helpers/response/successResponse.js";
 import errorResponse from "../helpers/response/errorResponse.js";
 import AWS from "aws-sdk";
 import fs from "fs";
+import getDataFromToken from "../helpers/cognito/getDataFromToken.js";
+import cognitoAdminInitiateAuth from "../helpers/cognito/cognitoAdminInitiateAuth.js";
 
 // Configure AWS credentials
 AWS.config.update({
@@ -24,10 +26,13 @@ const signUp = async (req, res) => {
     req.body;
 
   try {
+    // cognito operations
+    const cognitoSignUpResponse = await cognitoSignUp(email, password);
+    const UUID = cognitoSignUpResponse.userSub;
+
     // db operations
     const user = await User.findOne({ email: email });
     if (user) {
-      console.log(user);
       throw new Error("User already exists in database");
     }
 
@@ -36,6 +41,7 @@ const signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
+      _id: UUID,
       userName,
       firstName,
       lastName,
@@ -44,15 +50,14 @@ const signUp = async (req, res) => {
       password: hashedPassword,
     });
 
-    // cognito operations
-    cognitoSignUp(email, password);
-
     const savedUser = await newUser.save();
 
     successResponse(res, 201, savedUser, "User created successfully");
   } catch (error) {
-    errorResponse(res, 400, error.message);
+    errorResponse(res, 400, "Problem in signing up", error.message);
   }
+
+  // res.json("signup controller responded")
 };
 
 // @desc    verify user
@@ -64,8 +69,8 @@ const verify = async (req, res) => {
   try {
     // cognito operations
     const verifyResult = await cognitoVerify(email, verifyCode);
-    console.log(`result from verify: ${verifyResult}`);
     // verifyResult = "SUCCESS"
+    console.log(`VerifyResult -> ${verifyResult}`);
 
     if (verifyResult !== null) {
       // db operations
@@ -125,6 +130,8 @@ const addFavourites = async (req, res) => {
   } catch (error) {
     errorResponse(res, 400, error.message);
   }
+
+  res.json({ message: "response from addToFav" });
 };
 
 const uploadProfilePic = async (req, res) => {
@@ -149,10 +156,39 @@ const uploadProfilePic = async (req, res) => {
       }
     });
 
-    successResponse(res, 200, null, "image uploaded successfully")
+    successResponse(res, 200, null, "image uploaded successfully");
   } catch (error) {
-    errorResponse(res, 400, "Error in file upload", error.message)
+    errorResponse(res, 400, "Error in file upload", error.message);
   }
 };
 
-export { signUp, verify, addFavourites, uploadProfilePic };
+// @desc    fetch user by id
+// @route   GET /api/users
+// @access  Private
+const getUserById = async (req, res) => {
+  try {
+    // find the user by access token userSub(id in mongodb)
+    // Extract access token from header.
+    const access_token = req.headers.authorization.split(" ")[1];
+
+    // decode the token
+    const decodedToken = await getDataFromToken(access_token);
+
+    const UUID = decodedToken.data.sub;
+
+    // find user in db by id
+    const user = await User.findById(UUID).select("-password -createdAt -updatedAt -__v");
+
+    if (!user) {
+      throw new Error("No user found");
+    }
+
+    successResponse(res, 200, user , "User fetched successfully" )
+  } catch (error) {
+    errorResponse(res, 400, "Error in fetching user", error.message)
+  }
+
+  res.json("getUserBy id route");
+};
+
+export { signUp, verify, addFavourites, uploadProfilePic, getUserById };

@@ -29,7 +29,8 @@ const SignUp = ({ setEmail, setPassword }) => {
 
       navigate("/verify")
     } catch (error) {
-      console.log("Error in cognito")
+      console.log("Error in frontend signup")
+      console.log(error)
     }
   };
 

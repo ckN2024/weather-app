@@ -10,7 +10,7 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import { WiHumidity } from "react-icons/wi";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 
-const Home = () => {
+const Home = ({email}) => {
   const [data, setData] = useState({});
   const [fiveDaysData, setFiveDaysData] = useState({});
   // whenever a city is searched isCityInFavourites will get updated accordingly
@@ -23,7 +23,7 @@ const Home = () => {
 
   return (
     <div>
-      <Header />
+      <Header email={email}/>
       <div className="flex flex-col flex-wrap space-between gap-3 border rounded text-slate-700 bg-gradient-to-br from-indigo-200 from-10% via-sky-100 via-30% to-indigo-300 to-90% h-[75vh] mx-[6em] my-[2em] p-[3em] relative">
         {/* favourite button */}
         <div className="absolute top-[1.5em] right-[1.5em]">

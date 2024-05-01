@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      required: [true, "_id field is required"]
+    },
     userName: {
       type: String,
       required: [true, "Username is required"],

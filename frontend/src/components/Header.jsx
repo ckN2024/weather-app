@@ -2,7 +2,7 @@ import React from 'react'
 import Navbar from './Navbar'
 import SearchBar from './SearchBar'
 
-const Header = () => {
+const Header = ({email}) => {
   return (
     <div className="w-full shadow-md flex items-center gap-[1.2em] justify-between px-[6em] py-2">
         <SearchBar />
@@ -14,7 +14,7 @@ const Header = () => {
             />
             <h1 className="text-[2em] font-bold">Real Weather</h1>
         </div>
-        <Navbar />
+        <Navbar email={email}/>
         
     </div>
   )
