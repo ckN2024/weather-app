@@ -14,10 +14,10 @@ const cognitoSignUp = (email, password) => {
     userPool.signUp(email, password, attributeList, null, function (err, result) {
       if (err) {
         console.log("cognito: failed to register user", err.message);
-        reject(err)
+        reject(null)
       }
       console.log("cognito: user registered successfully");
-      console.log(result);
+      // console.log(result);
       resolve(result);
       /*
         result:

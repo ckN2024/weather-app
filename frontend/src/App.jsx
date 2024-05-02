@@ -14,11 +14,12 @@ import Profile from "./screens/Profile";
 function App() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [currentCity, setCurrentCity] = useState('delhi')
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home email={email}/>} />
+        <Route path="/" element={<Home email={email} currentCity={currentCity} setCurrentCity={setCurrentCity}/>} />
         <Route path="/signup" element={<SignUp setEmail={setEmail} setPassword={setPassword}/>} />
         <Route path="/signin" element={<SignIn />}/>
         <Route path="/verify" element={<Verify email={email} password={password}/>}/>

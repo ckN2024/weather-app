@@ -10,6 +10,6 @@ const router = express.Router()
 router.route('/').post(signUp).get(authenticateUser, getUserById)
 router.route('/verify').post(verify)
 router.route('/favourites').post(authenticateUser, addFavourites)
-router.route('/uploads').post(upload.single('file'), uploadProfilePic) // add authentication middleware
+router.route('/uploads').post(authenticateUser, upload.single('file'), uploadProfilePic) // add authentication middleware
 
 export default router

@@ -6,6 +6,12 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "_id field is required"]
     },
+
+    profilePicture: {
+      type: String,
+      trim: true
+    },
+    
     userName: {
       type: String,
       required: [true, "Username is required"],

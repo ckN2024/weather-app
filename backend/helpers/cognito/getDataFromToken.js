@@ -3,6 +3,7 @@ import jwkToPem from "jwk-to-pem";
 import jwk from "./jwk.js";
 
 const getDataFromToken = async (access_token) => {
+  // console.log(`access_token`, access_token)
     const result = await fetch(
         "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_sq7Hcnvxh/.well-known/jwks.json"
       );

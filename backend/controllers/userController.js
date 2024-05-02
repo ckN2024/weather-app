@@ -8,15 +8,15 @@ import AWS from "aws-sdk";
 import fs from "fs";
 import getDataFromToken from "../helpers/cognito/getDataFromToken.js";
 import cognitoAdminInitiateAuth from "../helpers/cognito/cognitoAdminInitiateAuth.js";
+import uploadFile from "../helpers/s3/uploadFile.js";
 
-// Configure AWS credentials
+//Configure AWS credentials
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: "eu-north-1",
 });
 
-const s3 = new AWS.S3();
 
 // @desc    signup user
 // @route   POST /api/users
@@ -28,6 +28,10 @@ const signUp = async (req, res) => {
   try {
     // cognito operations
     const cognitoSignUpResponse = await cognitoSignUp(email, password);
+    if(!cognitoSignUpResponse) {
+      throw new Error("cognito signup error")
+    }
+
     const UUID = cognitoSignUpResponse.userSub;
 
     // db operations
@@ -97,21 +101,28 @@ const verify = async (req, res) => {
 // @route   POST /api/users/favourites
 // @access  Private
 const addFavourites = async (req, res) => {
-  // extract email UUID from token
-
-  const { city, email } = req.query;
-  // find the user in db by email
-  
+  const {city} = req.headers
 
   try {
-    const user = await User.findOne({ email: email }).select("-password");
+    // get UUID from token
+    // Extract access token from header.
+    const access_token = req.headers.authorization.split(" ")[1]
+
+    // decode the token
+    const decodedToken = await getDataFromToken(access_token)
+
+    const UUID = decodedToken.data.sub
+
+    // find user in db by id
+    const user = await User.findById(UUID)
+
     if (!user) {
-      throw new Error("User not found in db");
+      throw new Error("User not found in db")
     }
 
     // prevent adding more than 5 favourite cities
     if (user.favouritePlaces.length >= 5) {
-      throw new Error("Favourite places cannot be more than 5");
+      throw new Error("Favourite places cannot be more than 5")
     }
 
     // prevent adding repeated cities
@@ -124,40 +135,61 @@ const addFavourites = async (req, res) => {
 
     // save user in db
     const savedUser = await user.save();
+
     successResponse(
       res,
       201,
       { favouritePlaces: savedUser.favouritePlaces },
-      `${city} added to favourites`
+      "City added to favourites"
     );
   } catch (error) {
     errorResponse(res, 400, error.message);
   }
 
-  res.json({ message: "response from addToFav" });
+  // res.json({ message: "response from addToFav" });
 };
 
 const uploadProfilePic = async (req, res) => {
+  const UUID = req.headers.uuid
+  if(!UUID) {
+    throw new Error("Unauthorised access to route")
+  }
+
   try {
     const file = req.file;
+    // const key = file.originalname  + toString(Date.now()) // Use original file name for the object key
+    // const path = file.path  // Use the path of the file in the uploads directory
+
+    if(!file) {
+      throw new Error("file should be uploaded")
+    }
+
+    const s3 = new AWS.S3();
+
+    const Key = Date.now().toString() + file.originalname
 
     const uploadParams = {
-      Bucket: "tyloones-weather-app-bucket",
-      Key: file.originalname, // Use original file name for the object key
-      Body: fs.createReadStream(file.path), // Use the path of the file in the uploads directory
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key,  // Use original file name for the object key
+      Body: fs.createReadStream(file.path), 
     };
 
-    s3.upload(uploadParams, (err, data) => {
+    s3.putObject(uploadParams, (err, data) => {
       if (err) {
         console.error("Error uploading file:", err);
-        res.status(500).send("Error uploading file");
+        throw new Error(err)
       } else {
         console.log("Upload successful. File location:", data.Location);
-        res.send("File uploaded successfully");
+
         // Delete the file from the local uploads directory
         fs.unlinkSync(file.path);
       }
     });
+
+    // find user in DB
+    const user = await User.findById(UUID)
+    user.profilePicture = Key
+    await user.save()
 
     successResponse(res, 200, null, "image uploaded successfully");
   } catch (error) {
@@ -180,15 +212,17 @@ const getUserById = async (req, res) => {
     const UUID = decodedToken.data.sub;
 
     // find user in db by id
-    const user = await User.findById(UUID).select("-password -createdAt -updatedAt -__v");
+    const user = await User.findById(UUID).select(
+      "-password -createdAt -updatedAt -__v"
+    );
 
     if (!user) {
       throw new Error("No user found");
     }
 
-    successResponse(res, 200, user , "User fetched successfully" )
+    successResponse(res, 200, user, "User fetched successfully");
   } catch (error) {
-    errorResponse(res, 400, "Error in fetching user", error.message)
+    errorResponse(res, 400, "Error in fetching user", error.message);
   }
 
   // res.json("getUserBy id route");

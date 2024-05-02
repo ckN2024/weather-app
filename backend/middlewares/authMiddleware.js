@@ -7,8 +7,10 @@ const authenticateUser = async (req, res, next) => {
 
   // console.log(access_token)
   const decodedToken = await getDataFromToken(access_token)
+  // console.log("token is decoded: \n", decodedToken)
 
   if(decodedToken.data) {
+    req.headers.uuid = decodedToken.data.sub
     next()
   } else {
     errorResponse(res, 400, "Authentication error", decodedToken.message)

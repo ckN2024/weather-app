@@ -3,35 +3,90 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import axios from "axios";
 import weather from "../apiResonsses/weather.json";
-import fivedayforecast from "../apiResonsses/fivedayforecast.json"
+import fivedayforecast from "../apiResonsses/fivedayforecast.json";
 import { ImLocation } from "react-icons/im";
 import { FaTemperatureHalf } from "react-icons/fa6";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import { WiHumidity } from "react-icons/wi";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 
-const Home = ({email}) => {
+const Home = ({ email, currentCity, setCurrentCity }) => {
   const [data, setData] = useState({});
   const [fiveDaysData, setFiveDaysData] = useState({});
+  const [isValidCity, setIsValidCity] = useState(true);
   // whenever a city is searched isCityInFavourites will get updated accordingly
   const [isCityInFavourites, setIsCityInFavourites] = useState(false);
+  const APIKEY = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
-    setData(weather);
-    setFiveDaysData(fivedayforecast);
-  }, []);
+    if(!currentCity) {
+      setCurrentCity('delhi')
+    }
+    async function getWeather() {
+      try {
+        const currentWeather = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${currentCity}&appid=${APIKEY}`
+        );
+        setData(currentWeather.data);
+
+        const fiveDaysWeather = await axios.get(
+          `https://api.openweathermap.org/data/2.5/forecast?q=${currentCity}&appid=${APIKEY}&cnt=5`
+        );
+        setFiveDaysData(fiveDaysWeather.data);
+
+        const access_token = sessionStorage.getItem("accessToken");
+
+        const userDetails = await axios.get(
+          "http://localhost:5000/api/users/",
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+
+        // check if the city is in favourites
+        // const favourites = userDetails.data.data.favouritePlaces;
+        const favourites = userDetails.data.data.favouritePlaces;
+        // console.log(`Favourites: ${favourites}`)
+        // console.log(favourites.includes(currentCity))
+        if (favourites.includes(currentCity)) {
+          setIsCityInFavourites(true);
+        } else {
+          setIsCityInFavourites(false)
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    getWeather();
+
+    // setData(weather);
+    // setFiveDaysData(fivedayforecast);
+  }, [currentCity, isCityInFavourites]);
 
   const favouriteButtonHandler = () => {
-    // add to favourites
-  }
+    if (isValidCity) {
+      axios.post("http://localhost:5000/api/users/favourites", {
+        headers: {
+          city: { currentCity },
+        },
+      });
+    }
+  };
 
   return (
     <div>
-      <Header email={email}/>
+      <Header
+        email={email}
+        currentCity={currentCity}
+        setCurrentCity={setCurrentCity}
+      />
       <div className="flex flex-col flex-wrap space-between gap-3 border rounded text-slate-700 bg-gradient-to-br from-indigo-200 from-10% via-sky-100 via-30% to-indigo-300 to-90% h-[75vh] mx-[6em] my-[2em] p-[3em] relative">
         {/* favourite button */}
         <div
-          onClick={favouriteButtonHandler} 
+          onClick={favouriteButtonHandler}
           className="absolute top-[1.5em] right-[1.5em]"
         >
           {isCityInFavourites ? (
@@ -112,12 +167,14 @@ const Home = ({email}) => {
         <div className="bg-blue-200 w-[20em] p-[1em] rounded-md">
           <div className="flex items-center">
             <WiHumidity className="text-[1.8em]" />
-            Rain volume (last 1h): {data?.rain?.['1h'] } {data?.rain?.['1h'] ? 'mm': '--'}
+            Rain volume (last 1h): {data?.rain?.["1h"]}{" "}
+            {data?.rain?.["1h"] ? "mm" : "--"}
           </div>
 
           <div className="flex items-center">
             <WiHumidity className="text-[1.8em]" />
-            Rain volume (last 3h): {data?.rain?.['3h']} {data?.rain?.['3h'] ? 'mm': '--'}
+            Rain volume (last 3h): {data?.rain?.["3h"]}{" "}
+            {data?.rain?.["3h"] ? "mm" : "--"}
           </div>
         </div>
 
@@ -125,35 +182,38 @@ const Home = ({email}) => {
         <div className="bg-blue-200 w-[20em] p-[1em] rounded-md">
           <div className="flex items-center">
             <WiHumidity className="text-[1.8em]" />
-            Wind speed: {data?.wind?.speed } {data?.wind?.speed ? 'm/s': '--'}
+            Wind speed: {data?.wind?.speed} {data?.wind?.speed ? "m/s" : "--"}
           </div>
 
           <div className="flex items-center">
             <WiHumidity className="text-[1.8em]" />
-            Wind direction: {data?.wind?.deg} {data?.wind?.deg ? 'deg': '--'}
+            Wind direction: {data?.wind?.deg} {data?.wind?.deg ? "deg" : "--"}
           </div>
         </div>
 
         {/* favourite cities */}
-        <div className="flex flex-wrap gap-2 justify-center bg-blue-200 w-[20em] p-[1em] rounded-md">
+        {/* <div className="flex flex-wrap gap-2 justify-center bg-blue-200 w-[20em] p-[1em] rounded-md">
           <div className="bg-blue-300 p-1 w-[48%]">city1</div>
           <div className="bg-blue-300 p-1 w-[48%]">city2</div>
           <div className="bg-blue-300 p-1 w-[48%]">city3</div>
           <div className="bg-blue-300 p-1 w-[48%]">city4</div>
           <div className="bg-blue-300 p-1 w-[48%]">city5</div>
-        </div>
+        </div> */}
 
         {/* 5 days forecast */}
         <div className="bg-blue-200 flex flex-wrap justify-center gap-2 w-[30em] h-full p-[1em] rounded-md">
           <h3 className="font-semibold text-xl w-full">5 days forecast:</h3>
-          { fiveDaysData?.list?.map((d, idx)=>(
-            <div className="bg-indigo-100 px-3 py-2 w-[47%] rounded-md" key={idx}>
-              <p className="underline">Day {idx+1}: </p>
+          {fiveDaysData?.list?.map((d, idx) => (
+            <div
+              className="bg-indigo-100 px-3 py-2 w-[47%] rounded-md"
+              key={idx}
+            >
+              <p className="underline">Day {idx + 1}: </p>
               <p>Temp: {d?.main?.temp}</p>
               <p>Max: {d?.main?.temp_max}</p>
               <p>Min: {d?.main?.temp_min}</p>
             </div>
-          )) }
+          ))}
         </div>
       </div>
     </div>
