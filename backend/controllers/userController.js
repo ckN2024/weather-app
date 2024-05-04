@@ -17,7 +17,6 @@ AWS.config.update({
   region: "eu-north-1",
 });
 
-
 // @desc    signup user
 // @route   POST /api/users
 // @access  Public
@@ -28,8 +27,8 @@ const signUp = async (req, res) => {
   try {
     // cognito operations
     const cognitoSignUpResponse = await cognitoSignUp(email, password);
-    if(!cognitoSignUpResponse) {
-      throw new Error("cognito signup error")
+    if (!cognitoSignUpResponse) {
+      throw new Error("cognito signup error");
     }
 
     const UUID = cognitoSignUpResponse.userSub;
@@ -40,10 +39,6 @@ const signUp = async (req, res) => {
       throw new Error("User already exists in database");
     }
 
-    // password hashing
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const newUser = new User({
       _id: UUID,
       userName,
@@ -51,17 +46,14 @@ const signUp = async (req, res) => {
       lastName,
       email,
       mobileNumber,
-      password: hashedPassword,
     });
 
     const savedUser = await newUser.save();
 
     successResponse(res, 201, savedUser, "User created successfully");
   } catch (error) {
-    errorResponse(res, 400, "Problem in signing up", error.message);
+    errorResponse(res, 400, "Problem in signing up", error);
   }
-
-  // res.json("signup controller responded")
 };
 
 // @desc    verify user
@@ -78,7 +70,7 @@ const verify = async (req, res) => {
 
     if (verifyResult !== null) {
       // db operations
-      const user = await User.findOne({ email: email }).select("-password");
+      const user = await User.findOne({ email: email });
 
       if (!user) {
         throw new Error("Requested user not found in database");
@@ -101,28 +93,25 @@ const verify = async (req, res) => {
 // @route   POST /api/users/favourites
 // @access  Private
 const addFavourites = async (req, res) => {
-  const {city} = req.headers
+  const { city } = req.headers;
 
   try {
-    // get UUID from token
     // Extract access token from header.
-    const access_token = req.headers.authorization.split(" ")[1]
-
-    // decode the token
-    const decodedToken = await getDataFromToken(access_token)
-
-    const UUID = decodedToken.data.sub
+    const UUID = req.headers.uuid;
+    if (!UUID) {
+      throw new Error("Unauthorised access to route");
+    }
 
     // find user in db by id
-    const user = await User.findById(UUID)
+    const user = await User.findById(UUID);
 
     if (!user) {
-      throw new Error("User not found in db")
+      throw new Error("User not found in db");
     }
 
     // prevent adding more than 5 favourite cities
     if (user.favouritePlaces.length >= 5) {
-      throw new Error("Favourite places cannot be more than 5")
+      throw new Error("Favourite places cannot be more than 5");
     }
 
     // prevent adding repeated cities
@@ -135,6 +124,7 @@ const addFavourites = async (req, res) => {
 
     // save user in db
     const savedUser = await user.save();
+    console.log(`${city} stored in DB`)
 
     successResponse(
       res,
@@ -149,10 +139,55 @@ const addFavourites = async (req, res) => {
   // res.json({ message: "response from addToFav" });
 };
 
+// @desc    remove a favourite place
+// @route   PATCH /api/users/favourites
+// @access  Private
+const removeFromFavourites = async (req, res) => {
+  const { city } = req.headers;
+
+  try {
+    // Extract access token from header.
+    const UUID = req.headers.uuid;
+    if (!UUID) {
+      throw new Error("Unauthorised access to route");
+    }
+
+    // find user in db by id
+    const user = await User.findById(UUID);
+
+    if (!user) {
+      throw new Error("User not found in db");
+    }
+
+
+    // remove the city from favourites
+    if(user.favouritePlaces.includes(city)) {
+      const idxToRemove = user.favouritePlaces.indexOf(city)
+      user.favouritePlaces.splice(idxToRemove, 1)
+      
+    }
+
+    // save user in db
+    const savedUser = await user.save();
+    console.log(`${city} removed from DB`)
+
+    successResponse(
+      res,
+      201,
+      { favouritePlaces: savedUser.favouritePlaces },
+      "City removed from favourites"
+    );
+  } catch (error) {
+    errorResponse(res, 400, error.message);
+  }
+
+  // res.json({ message: "response from addToFav" });
+};
+
 const uploadProfilePic = async (req, res) => {
-  const UUID = req.headers.uuid
-  if(!UUID) {
-    throw new Error("Unauthorised access to route")
+  const UUID = req.headers.uuid;
+  if (!UUID) {
+    throw new Error("Unauthorised access to route");
   }
 
   try {
@@ -160,24 +195,24 @@ const uploadProfilePic = async (req, res) => {
     // const key = file.originalname  + toString(Date.now()) // Use original file name for the object key
     // const path = file.path  // Use the path of the file in the uploads directory
 
-    if(!file) {
-      throw new Error("file should be uploaded")
+    if (!file) {
+      throw new Error("file should be uploaded");
     }
 
     const s3 = new AWS.S3();
 
-    const Key = Date.now().toString() + file.originalname
+    const Key = Date.now().toString() + file.originalname;
 
     const uploadParams = {
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key,  // Use original file name for the object key
-      Body: fs.createReadStream(file.path), 
+      Key, // Use original file name for the object key
+      Body: fs.createReadStream(file.path),
     };
 
     s3.putObject(uploadParams, (err, data) => {
       if (err) {
         console.error("Error uploading file:", err);
-        throw new Error(err)
+        throw new Error(err);
       } else {
         console.log("Upload successful. File location:", data.Location);
 
@@ -187,9 +222,9 @@ const uploadProfilePic = async (req, res) => {
     });
 
     // find user in DB
-    const user = await User.findById(UUID)
-    user.profilePicture = Key
-    await user.save()
+    const user = await User.findById(UUID);
+    user.profilePicture = Key;
+    await user.save();
 
     successResponse(res, 200, null, "image uploaded successfully");
   } catch (error) {
@@ -213,7 +248,7 @@ const getUserById = async (req, res) => {
 
     // find user in db by id
     const user = await User.findById(UUID).select(
-      "-password -createdAt -updatedAt -__v"
+      "-createdAt -updatedAt -__v"
     );
 
     if (!user) {
@@ -228,4 +263,4 @@ const getUserById = async (req, res) => {
   // res.json("getUserBy id route");
 };
 
-export { signUp, verify, addFavourites, uploadProfilePic, getUserById };
+export { signUp, verify, addFavourites, removeFromFavourites, uploadProfilePic, getUserById };

@@ -2,7 +2,7 @@ import errorResponse from "../helpers/response/errorResponse.js"
 import getDataFromToken from "../helpers/cognito/getDataFromToken.js";
 
 const authenticateUser = async (req, res, next) => {
-  // Extract access token from header.
+  // Extract access token from header
   const access_token = req.headers.authorization.split(" ")[1]
 
   // console.log(access_token)

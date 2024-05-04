@@ -18,9 +18,11 @@ const Home = ({ email, currentCity, setCurrentCity }) => {
   const [isCityInFavourites, setIsCityInFavourites] = useState(false);
   const APIKEY = import.meta.env.VITE_WEATHER_API_KEY;
 
+  const access_token = sessionStorage.getItem("accessToken");
+
   useEffect(() => {
-    if(!currentCity) {
-      setCurrentCity('delhi')
+    if (!currentCity) {
+      setCurrentCity("delhi");
     }
     async function getWeather() {
       try {
@@ -34,7 +36,41 @@ const Home = ({ email, currentCity, setCurrentCity }) => {
         );
         setFiveDaysData(fiveDaysWeather.data);
 
-        const access_token = sessionStorage.getItem("accessToken");
+        const userDetails = await axios.get(
+          "http://localhost:5000/api/users/",
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+
+        // check if the city is in favourites
+        const favourites = userDetails.data.data.favouritePlaces;
+        if (favourites.includes(currentCity)) {
+          setIsCityInFavourites(true);
+        } else {
+          setIsCityInFavourites(false);
+        }
+      } catch (error) {}
+    }
+
+    getWeather();
+
+    // setData(weather);
+    // setFiveDaysData(fivedayforecast);
+  }, [currentCity, isCityInFavourites]);
+
+  const favouriteButtonHandler = async () => {
+    if (isCityInFavourites) {
+      // remove from favourites
+      if (isValidCity) {
+        await axios.patch("http://localhost:5000/api/users/favourites", null, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            city: currentCity,
+          },
+        });
 
         const userDetails = await axios.get(
           "http://localhost:5000/api/users/",
@@ -46,33 +82,40 @@ const Home = ({ email, currentCity, setCurrentCity }) => {
         );
 
         // check if the city is in favourites
-        // const favourites = userDetails.data.data.favouritePlaces;
         const favourites = userDetails.data.data.favouritePlaces;
-        // console.log(`Favourites: ${favourites}`)
-        // console.log(favourites.includes(currentCity))
         if (favourites.includes(currentCity)) {
           setIsCityInFavourites(true);
         } else {
-          setIsCityInFavourites(false)
+          setIsCityInFavourites(false);
         }
-      } catch (error) {
-        
       }
-    }
+    } else {
+      // add to favourite
+      if (isValidCity) {
+        await axios.post("http://localhost:5000/api/users/favourites", null, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            city: currentCity,
+          },
+        });
 
-    getWeather();
+        const userDetails = await axios.get(
+          "http://localhost:5000/api/users/",
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
 
-    // setData(weather);
-    // setFiveDaysData(fivedayforecast);
-  }, [currentCity, isCityInFavourites]);
-
-  const favouriteButtonHandler = () => {
-    if (isValidCity) {
-      axios.post("http://localhost:5000/api/users/favourites", {
-        headers: {
-          city: { currentCity },
-        },
-      });
+        // check if the city is in favourites
+        const favourites = userDetails.data.data.favouritePlaces;
+        if (favourites.includes(currentCity)) {
+          setIsCityInFavourites(true);
+        } else {
+          setIsCityInFavourites(false);
+        }
+      }
     }
   };
 

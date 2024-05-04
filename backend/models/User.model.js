@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
-    
+
     userName: {
       type: String,
       required: [true, "Username is required"],
@@ -39,11 +39,6 @@ const UserSchema = new mongoose.Schema(
       type: String,
       maxlength: [10, "Mobile number must be 10 digits"],
       minLength: [10, "Mobile number must be 10 digits"]
-    },
-
-    password: {
-      type: String,
-      required: [true, "Password is required"],
     },
 
     isVerified: {
