@@ -1,2 +1,15 @@
+# dependencies
+/node_modules
+
+# environment variables
 .env
-node_modules
+
+# production build
+/build
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
