@@ -27,14 +27,25 @@ const Home = ({ email, currentCity, setCurrentCity }) => {
     async function getWeather() {
       try {
         const currentWeather = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?q=${currentCity}&appid=${APIKEY}`
+          `http://localhost:5000/api/weather/current`,
+          {
+            headers: {
+              city: currentCity,
+            },
+          }
         );
-        setData(currentWeather.data);
+      
+        setData(currentWeather.data.data);
 
         const fiveDaysWeather = await axios.get(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${currentCity}&appid=${APIKEY}&cnt=5`
+          `http://localhost:5000/api/weather/fivedays`,
+          {
+            headers: {
+              city: currentCity,
+            },
+          }
         );
-        setFiveDaysData(fiveDaysWeather.data);
+        setFiveDaysData(fiveDaysWeather.data.data);
 
         const userDetails = await axios.get(
           "http://localhost:5000/api/users/",

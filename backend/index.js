@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import cors from "cors"
 import connectDB from "./config/connectDB.js"
 import userRoutes from "./routes/userRoutes.js"
+import weatherRoutes from "./routes/weatherRoutes.js"
 
 dotenv.config()
 connectDB()
@@ -27,6 +28,7 @@ app.use(bodyParser.json());
 
 // route middlewares
 app.use("/api/users", userRoutes);
+app.use("/api/weather", weatherRoutes);
 
 app.listen(PORT, () => {
   console.log(`server running on port: ${PORT}`);
